@@ -37,7 +37,6 @@ services:
       - zoo_data:/data
       - zoo_log:/datalog
 
-
   kafka1:
     image: confluentinc/cp-kafka:5.0.0
     hostname: kafka1
