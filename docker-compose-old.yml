@@ -1,0 +1,75 @@
+version: '2'
+
+services:
+  portainer:
+    image: portainer/portainer
+    ports:
+      - "9000:9000"
+    command: -H unix:///var/run/docker.sock
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - portainer_data:/data
+
+  splunkenterprice:
+    image: splunk/splunk:7.0.3
+    hostname: splunkenterprice
+    environment:
+      SPLUNK_START_ARGS: --accept-license --answer-yes
+      SPLUNK_ENABLE_LISTEN: 9997
+      SPLUNK_ADD: tcp 1514
+    ports:
+      - "8000:8000"
+      - "9997:9997"
+      - "8088:8088"
+      - "1514:1514"
+
+  zookeeper:
+    image: confluentinc/cp-zookeeper:5.0.0
+    container_name: zookeeper
+    ports:
+      - "2181:2181"
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+
+  kafka:
+    image: confluentinc/cp-kafka:latest
+    container_name: kafka
+    ports:
+      - "9092:9092"
+    depends_on:
+      - zookeeper
+    environment:
+      #KAFKA_BROKED_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://LOCALHOST:9092
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      #KAFKA_ADVERTISED_HOST_NAME: kafka
+
+  kafka-rest-proxy:
+    image: confluentinc/cp-kafka-rest:5.0.0
+    hostname: kafka-rest-proxy
+    ports:
+      - "8082:8082"
+    environment:
+      KAFKA_REST_LISTENERS: http://0.0.0.0:8082
+      KAFKA_REST_HOST_NAME: kafka-rest-proxy
+      KAFKA_REST_BOOTSRAP_SERVERS: PLAINTEXT://kafka:19092
+    depends_on:
+      - zookeeper
+      - kafka
+
+  kafka-topix-ui:
+    image: landoop/kafka-topics-ui:0.9.4
+    hostname: kafka-topics-ui
+    ports:
+      - "8005:8000"
+    environment:
+      KAFKA_REST_PROXY_URL: "http://kafka-rest-proxy:8082/"
+      PROXY: "true"
+    depends_on:
+      - zookeeper
+      - kafka
+      - kafka-rest-proxy
+
+volumes:
+  portainer_data:
