@@ -1,28 +1,5 @@
 version: '2'
-
 services:
-  portainer:
-    image: portainer/portainer
-    ports:
-      - "9000:9000"
-    command: -H unix:///var/run/docker.sock
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
-      - portainer_data:/data
-
-  splunkenterprice:
-    image: splunk/splunk:7.0.3
-    hostname: splunkenterprice
-    environment:
-      SPLUNK_START_ARGS: --accept-license --answer-yes
-      SPLUNK_ENABLE_LISTEN: 9997
-      SPLUNK_ADD: tcp 1514
-    ports:
-      - "8000:8000"
-      - "9997:9997"
-      - "8088:8088"
-      - "1514:1514"
-
   zookeeper:
     image: confluentinc/cp-zookeeper:5.0.0
     container_name: zookeeper
@@ -70,6 +47,3 @@ services:
       - zookeeper
       - kafka
       - kafka-rest-proxy
-
-volumes:
-  portainer_data:
