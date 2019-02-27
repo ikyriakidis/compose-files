@@ -1,0 +1,11 @@
+version: '3.0'
+services:
+  db:
+    image: microsoft/mssql-server-linux:2017-latest
+    ports:
+      - "1434:1433"
+    environment:
+      SA_PASSWORD: "Alaska2017"
+      ACCEPT_EULA: "Y"
+    healthcheck:
+      test: /opt/mssql-tools/bin/sqlcmd -S localhost -U SA -P 'Alaska2017' -Q 'select 1'
