@@ -1,0 +1,13 @@
+version: '3.4'
+services:
+  portainer:
+    image: redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - /srv/docker/redis:/var/lib/redis
+    volumes:
+      - redis_data:/var/lib/redis
+
+volumes:
+  redis_data:
