@@ -1,4 +1,4 @@
-version: '2.1'
+version: '3.4'
 services:
   portainer:
     image: portainer/portainer
@@ -8,39 +8,6 @@ services:
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - portainer_data:/data
-  
-  splunkenterprice:
-    image: splunk/splunk:7.0.3
-    hostname: splunkenterprice
-    environment:
-      SPLUNK_START_ARGS: --accept-license --answer-yes
-      SPLUNK_ENABLE_LISTEN: 9997
-      SPLUNK_ADD: tcp 1514
-    ports:
-      - "8000:8000"
-      - "9997:9997"
-      - "8088:8088"
-      - "1514:1514"
-
-  my-registry:
-    image: registry:latest
-    container_name: my-registry
-    volumes:
-      - registry:/var/lib/registry
-    ports:
-      - "50000:5000"
-    restart: unless-stopped
-
-  my-registry-ui:
-    image: joxit/docker-registry-ui:static
-    ports:
-      - 50001:80
-    environment:
-      - REGISTRY_TITLE=My Private Docker Registry
-      - REGISTRY_URL=http://my-registry:5000
-    depends_on:
-      - my-registry
 
 volumes:
   portainer_data:
-  registry:
